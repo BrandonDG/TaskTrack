@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <TextView
+        android:text="Type: "
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/newTaskTypeModal_typelabel"
+        android:textSize="24sp"
+        android:layout_marginLeft="77dp"
+        android:layout_marginStart="77dp"
+        android:layout_marginTop="72dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:text="Type"
+        android:ems="10"
+        android:layout_alignBottom="@+id/newTaskTypeModal_typelabel"
+        android:layout_toRightOf="@+id/newTaskTypeModal_typelabel"
+        android:layout_toEndOf="@+id/newTaskTypeModal_typelabel"
+        android:id="@+id/newTaskTypeModal_typetextbox" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:text="Colour"
+        android:ems="10"
+        android:layout_alignBottom="@+id/newTaskModal_typelabel"
+        android:layout_toRightOf="@+id/newTaskTypeModal_typelabel"
+        android:layout_toEndOf="@+id/newTaskTypeModal_typelabel"
+        android:id="@+id/newTaskTypeModal_colourtextbox" />
+
+    <TextView
+        android:text="Colour: "
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/newTaskModal_typelabel"
+        android:textSize="24sp"
+        android:layout_marginTop="13dp"
+        android:layout_below="@+id/newTaskTypeModal_typelabel"
+        android:layout_toLeftOf="@+id/newTaskTypeModal_colourtextbox"
+        android:layout_toStartOf="@+id/newTaskTypeModal_colourtextbox" />
+
+    <Button
+        android:text="Cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/newTaskTypeModal_colourtextbox"
+        android:layout_alignLeft="@+id/newTaskModal_typelabel"
+        android:layout_alignStart="@+id/newTaskModal_typelabel"
+        android:id="@+id/newTaskTypeModal_cancelbutton" />
+
+    <Button
+        android:text="Add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/newTaskTypeModal_cancelbutton"
+        android:layout_toRightOf="@+id/newTaskTypeModal_cancelbutton"
+        android:layout_toEndOf="@+id/newTaskTypeModal_cancelbutton"
+        android:id="@+id/newTaskTypeModal_addbutton" />
+
+</RelativeLayout>
