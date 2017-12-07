@@ -9,12 +9,12 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import android.view.View;
 
-//import com.google.gson.JsonArray;
-//import com.google.gson.JsonElement;
-//import com.google.gson.JsonObject;
-//import com.koushikdutta.async.future.FutureCallback;
-//import com.koushikdutta.ion.Ion;
-//import com.koushikdutta.ion.loader.PackageIconLoader;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
+import com.koushikdutta.ion.loader.PackageIconLoader;
 
 import java.util.ArrayList;
 
@@ -27,14 +27,27 @@ public class TaskTrackDB extends SQLiteOpenHelper {
     /**
      * Declare and instantiate constants used in CourseOpenHelper.
      */
-    private static final int    SCHEMA_VERSION            = 4;
-    private static final String DB_NAME                  = "a3.db";
-    public  static final String COURSES_TABLE_NAME       = "courses";
-    public  static final String ID_COLUMN_NAME           = "_id";
+    public  static final String COURSES_TABLE_NAME       = "tasks";
     public  static final String COURSENUMBER_COLUMN_NAME = "coursenumber";
     public  static final String TERM_COLUMN_NAME         = "term";
     public  static final String NAME_COLUMN_NAME         = "name";
     public  static final String DESCRIPTION_COLUMN_NAME  = "description";
+
+    private static final int    SCHEMA_VERSION           = 5;
+    private static final String DB_NAME                  = "TaskTrack.db";
+    public  static final String TASKS_TABLE_NAME         = "tasks";
+    public  static final String ID_COLUMN_NAME           = "_id";
+    public  static final String TASKNAME_COLUMN_NAME     = "name";
+    public  static final String TASKTYPE_COLUMN_NAME     = "type";
+    public  static final String FROMTIME_COLUMN_NAME     = "fromtime";
+    public  static final String TOTIME_COLUMN_NAME       = "totime";
+    public  static final String COMPLETED_COLUMN_NAME    = "completed";
+
+    // Make 2 tables, and the Type column in first table is ID of type in second table.
+    public static final String TASKTYPES_TABLE_NAME       = "tasktypes";
+    public static final String TASKTYPENAME_COLUMN_NAME   = "name";
+    public static final String TASKTYPECOLOUR_COLUMN_NAME = "colour";
+
 
     /**
      * Constructor.
@@ -50,6 +63,7 @@ public class TaskTrackDB extends SQLiteOpenHelper {
      */
     @Override
     public void onCreate(final SQLiteDatabase db) {
+        /*
         db.execSQL("DROP TABLE IF EXISTS " + COURSES_TABLE_NAME);
 
         final String CREATE_TABLE_NAME;
@@ -60,6 +74,24 @@ public class TaskTrackDB extends SQLiteOpenHelper {
                 TERM_COLUMN_NAME + " TEXT NOT NULL," +
                 NAME_COLUMN_NAME + " TEXT NOT NULL, " +
                 DESCRIPTION_COLUMN_NAME + " TEXT NOT NULL)";
+        db.execSQL(CREATE_TABLE_NAME); */
+
+        db.execSQL("DROP TABLE IF EXISTS " + TASKS_TABLE_NAME);
+        String CREATE_TABLE_NAME;
+        CREATE_TABLE_NAME = "CREATE TABLE IF NOT EXISTS " + TASKS_TABLE_NAME + " ( " +
+                ID_COLUMN_NAME + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                TASKNAME_COLUMN_NAME + " TEXT NOT NULL, " +
+                TASKTYPE_COLUMN_NAME + " TEXT NOT NULL, " +
+                FROMTIME_COLUMN_NAME + " TEXT NOT NULL, " +
+                TOTIME_COLUMN_NAME + " TEXT NOT NULL, " +
+                COMPLETED_COLUMN_NAME + " TEXT NOT NULL);";
+        db.execSQL(CREATE_TABLE_NAME);
+
+        db.execSQL("DROP TABLE IF EXISTS " + TASKTYPES_TABLE_NAME);
+        CREATE_TABLE_NAME = "CREATE TABLE IF NOT EXISTS " + TASKTYPES_TABLE_NAME + " ( " +
+                ID_COLUMN_NAME + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                TASKTYPENAME_COLUMN_NAME + " TEXT NOT NULL, " +
+                TASKTYPECOLOUR_COLUMN_NAME + " TEXT NOT NULL)";
         db.execSQL(CREATE_TABLE_NAME);
     }
 
@@ -144,16 +176,77 @@ public class TaskTrackDB extends SQLiteOpenHelper {
         db.insert(COURSES_TABLE_NAME, null, contentValues);
     }
 
+    /*
+    private void insertTask(final SQLiteDatabase db,
+                               final int id,
+                               final String name,
+                               final String type,
+                               final String fromTime,
+                               final String toTime) {
+        final ContentValues contentValues;
+        contentValues = new ContentValues();
+
+        contentValues.put(ID_COLUMN_NAME, id);
+        contentValues.put(TASKNAME_COLUMN_NAME, name);
+        contentValues.put(TASKTYPE_COLUMN_NAME, type);
+        contentValues.put(FROMTIME_COLUMN_NAME, fromTime);
+        contentValues.put(TOTIME_COLUMN_NAME, toTime);
+        db.insert(TASKS_TABLE_NAME, null, contentValues);
+    } */
+
+    public void insertTask(final SQLiteDatabase db,
+                            final Task task) {
+        final ContentValues contentValues;
+        contentValues = new ContentValues();
+
+        contentValues.put(ID_COLUMN_NAME, getNumberOfTasks(db) - 1);
+        contentValues.put(TASKNAME_COLUMN_NAME, task.getName());
+        contentValues.put(TASKTYPE_COLUMN_NAME, task.getType());
+        contentValues.put(FROMTIME_COLUMN_NAME, task.getEndTime());
+        contentValues.put(TOTIME_COLUMN_NAME, task.getStartTime());
+        contentValues.put(COMPLETED_COLUMN_NAME, task.getCompleted());
+        db.insert(TASKS_TABLE_NAME, null, contentValues);
+    }
+
+    public void insertTaskType(final SQLiteDatabase db,
+                                final TaskType tasktype) {
+        final ContentValues contentValues;
+        contentValues = new ContentValues();
+
+        contentValues.put(ID_COLUMN_NAME, getNumberOfTaskTypes(db) - 1);
+        contentValues.put(TASKTYPENAME_COLUMN_NAME, tasktype.getName());
+        contentValues.put(TASKTYPECOLOUR_COLUMN_NAME, tasktype.getColour());
+        db.insert(TASKTYPES_TABLE_NAME, null, contentValues);
+    }
+
+    /*
+    private void insertTaskType(final SQLiteDatabase db,
+                            final int id,
+                            final String name,
+                            final String colour) {
+        final ContentValues contentValues;
+        contentValues = new ContentValues();
+
+        contentValues.put(ID_COLUMN_NAME, id);
+        contentValues.put(TASKTYPENAME_COLUMN_NAME, name);
+        contentValues.put(TASKTYPECOLOUR_COLUMN_NAME, colour);
+        db.insert(TASKTYPES_TABLE_NAME, null, contentValues);
+    } */
+
     /**
-     * Get amount of courses in database.
+     * Get amount of Tasks in database.
      * @param db
      * @return
      */
-    private long getNumberOfCourses(final SQLiteDatabase db) {
+    private long getNumberOfTasks(final SQLiteDatabase db) {
         final long numEntries;
+        numEntries = DatabaseUtils.queryNumEntries(db, TASKS_TABLE_NAME);
+        return numEntries;
+    }
 
-        numEntries = DatabaseUtils.queryNumEntries(db, COURSES_TABLE_NAME);
-
+    private long getNumberOfTaskTypes(final SQLiteDatabase db) {
+        final long numEntries;
+        numEntries = DatabaseUtils.queryNumEntries(db, TASKTYPES_TABLE_NAME);
         return numEntries;
     }
 
@@ -165,6 +258,36 @@ public class TaskTrackDB extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ArrayList<String> results = new ArrayList<String>();
         String query = "SELECT DISTINCT " + TERM_COLUMN_NAME + " FROM " + COURSES_TABLE_NAME;
+        Cursor cursor = db.rawQuery(query, null);
+        cursor.moveToFirst();
+        while (cursor.isAfterLast() == false) {
+            results.add(cursor.getString(0));
+            cursor.moveToNext();
+        }
+        cursor.close();
+        db.close();
+        return results;
+    }
+
+    public ArrayList<String> getTasks() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ArrayList<String> results = new ArrayList<String>();
+        String query = "SELECT DISTINCT " + TASKNAME_COLUMN_NAME + " FROM " + TASKS_TABLE_NAME;
+        Cursor cursor = db.rawQuery(query, null);
+        cursor.moveToFirst();
+        while (cursor.isAfterLast() == false) {
+            results.add(cursor.getString(0));
+            cursor.moveToNext();
+        }
+        cursor.close();
+        db.close();
+        return results;
+    }
+
+    public ArrayList<String> getTaskTypes() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ArrayList<String> results = new ArrayList<String>();
+        String query = "SELECT DISTINCT " + TASKTYPENAME_COLUMN_NAME + " FROM " + TASKTYPES_TABLE_NAME;
         Cursor cursor = db.rawQuery(query, null);
         cursor.moveToFirst();
         while (cursor.isAfterLast() == false) {
@@ -232,5 +355,55 @@ public class TaskTrackDB extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return courseNumber;
+    }
+
+    public String queryTaskName(String taskname) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String courseNumber;
+        String query = "SELECT DISTINCT " + TASKNAME_COLUMN_NAME + " FROM " + TASKS_TABLE_NAME
+                + " WHERE " + TASKNAME_COLUMN_NAME + " = " + "'" + taskname + "'";
+        Cursor cursor = db.rawQuery(query, null);
+        cursor.moveToFirst();
+        courseNumber = cursor.getString(0);
+        cursor.close();
+        db.close();
+        return courseNumber;
+    }
+
+    public String queryTaskTypeName(String tasktypename) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String courseNumber;
+        String query = "SELECT DISTINCT " + TASKTYPENAME_COLUMN_NAME + " FROM " + TASKTYPES_TABLE_NAME
+                + " WHERE " + TASKTYPENAME_COLUMN_NAME + " = " + "'" + tasktypename + "'";
+        Cursor cursor = db.rawQuery(query, null);
+        cursor.moveToFirst();
+        courseNumber = cursor.getString(0);
+        cursor.close();
+        db.close();
+        return courseNumber;
+    }
+
+    public boolean removeTask(String taskname) {
+        return (this.getWritableDatabase()).delete(TASKS_TABLE_NAME, TASKNAME_COLUMN_NAME + " = ?", new String[] { taskname }) > 0;
+    }
+
+    public String removeTaskType(String tasktypename) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String courseNumber;
+        String query = "DELETE FROM " + TASKTYPES_TABLE_NAME
+                + " WHERE " + TASKTYPENAME_COLUMN_NAME + " = " + "'" + tasktypename + "'";
+        Cursor cursor = db.rawQuery(query, null);
+        cursor.moveToFirst();
+        courseNumber = cursor.getString(0);
+        cursor.close();
+        db.close();
+        return courseNumber;
+    }
+
+    public boolean markAsComplete(String taskname) {
+        final ContentValues contentValues;
+        contentValues = new ContentValues();
+        contentValues.put(COMPLETED_COLUMN_NAME, "true");
+        return (this.getWritableDatabase()).update(TASKS_TABLE_NAME, contentValues, TASKNAME_COLUMN_NAME + " = ?", new String[] { taskname }) > 0;
     }
 }
