@@ -20,6 +20,8 @@ public class Task {
         this.completed = "false";
     }
 
+    public Task() { }
+
     public String getName() {
         return this.name;
     }

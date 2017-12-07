@@ -13,6 +13,8 @@ public class TaskType {
         this.colour = colour;
     }
 
+    public TaskType() { }
+
     public String getName() {
         return this.name;
     }
